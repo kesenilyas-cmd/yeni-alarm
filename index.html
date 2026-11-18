@@ -133,12 +133,13 @@ const closeSheet=()=>$("#sheet").classList.remove("on");
 function readForm(){const dt=$("#f-d").value;if(!dt){alert("Tarih ve saat seç.");return null}return{title:$("#f-t").value.trim()||"Hatırlatma",dt,rep:$("#f-r").value}}
 $("#add").onclick=()=>{unlock();openSheet(null)};
 $("#f-x").onclick=closeSheet;
-$("#f-s").onclick=()=>{const v=readForm();if(!v)return;
+function doSave(force){const v=readForm();if(!v)return;
  const id=cur?cur.id:Date.now();
  if(cur)Object.assign(cur,v,{on:true,sn:0});else items.push({id,on:true,sn:0,...v});
- save();render();const k=$("#f-k").checked;closeSheet();notifPerm();if(k)ics(v,id)};
+ save();render();const k=force||$("#f-k").checked;closeSheet();if(k)ics(v,id);else notifPerm()}
+$("#f-s").onclick=()=>doSave(false);
 $("#f-del").onclick=()=>{if(confirm("Bu hatırlatma silinsin mi?")){items=items.filter(x=>x!==cur);save();render();closeSheet()}};
-$("#f-c").onclick=()=>{const v=readForm();if(v)ics(v,cur?cur.id:Date.now())};
+$("#f-c").onclick=()=>doSave(true);
 
 /* takvim (.ics) */
 function ics(v,id){
